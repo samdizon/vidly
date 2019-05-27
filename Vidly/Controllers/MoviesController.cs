@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Vidly.Models;
+using Vidly.ViewModel;
 
 namespace Vidly.Controllers
 {
@@ -12,35 +13,35 @@ namespace Vidly.Controllers
         // GET: Movies
         public ActionResult Random()
         {
-            var movie = new Movie() { Name = "Shrek!" };
-
-            return View(movie);
-            // return new ViewResult(movie);
-            // return Content("hello world");
-            // return HttpNotFound();
-            // return new EmptyResult();
-            //return RedirectToAction("Index","Home", new { page = 1, sortBy = "name"});
+            var movie = GetMovies().FirstOrDefault();
+            var customers = new List<Customer>
+            {
+                new Customer { Id = 1, Name = "Marisol Abduraman"},
+                new Customer { Id = 2, Name = "Mickey Mouse"}
+            };
+            var viewModel = new RandomMovieViewModel
+            {
+                Movie = movie,
+                Customers = customers
+            };
+            return View(viewModel);
         }
 
-        public ActionResult Edit(int id)
+        public ActionResult Index()
         {
-            return Content("id = "+ id);
+            return View(GetMovies());
         }
 
-        public ActionResult Index(int? pageIndex, string sortBy)
+
+        //temporary list of values for movies
+        private IEnumerable<Movie> GetMovies()
         {
-            if (!pageIndex.HasValue)
-                pageIndex = 1;
-            if (String.IsNullOrWhiteSpace(sortBy))
-                sortBy = "Name";
-            return Content(String.Format("pageIndex = {0}, sortBy = {1}", pageIndex, sortBy));
+            return new List<Movie>
+            {
+                new Movie { Id = 1, Name = "Shrek!"},
+                new Movie { Id = 2, Name = "Wall-e"}
+            };
         }
 
-
-        [Route("movies/released/{year:regex(\\d{4})}/{month:regex(\\d{2}):range(1,12)}")]
-        public ActionResult ByReleaseDate(int year, byte month)
-        {
-            return Content(year+"/"+month);
-        }
     }
 }
